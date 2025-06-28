@@ -41,8 +41,9 @@ AudioSource:
   m_GameObject: {fileID: 2293793633860455342}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: d66f538af5f176241bb066e3bfa3bf3c, type: 3}
+  OutputAudioMixerGroup: {fileID: -3493239110188482489, guid: 99b9d50166830f64a85d1dc9ee91427f,
+    type: 2}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -174,6 +175,7 @@ GameObject:
   - component: {fileID: 1418384865660630316}
   - component: {fileID: 2414431909659353913}
   - component: {fileID: 9094253339817150789}
+  - component: {fileID: 1832001702369313532}
   m_Layer: 0
   m_Name: Cube Hero
   m_TagString: Player
@@ -340,6 +342,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   impactAudioSource: {fileID: 8812396845369564065}
+  impactAudioClip: {fileID: 8300000, guid: d66f538af5f176241bb066e3bfa3bf3c, type: 3}
   impactEffectDelay: 0.2
   impactShakeStrengh: 0.03
   minImpactVelocity: 3
@@ -352,3 +355,15 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+--- !u!114 &1832001702369313532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9179988959239618102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0677953174e5d4e4ea19e5a35a219456, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

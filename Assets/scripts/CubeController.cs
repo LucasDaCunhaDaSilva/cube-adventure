@@ -1,24 +1,28 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
 public class CubeController : MonoBehaviour
 {
+    private const string ESPETO_TAG = "Espeto";
+
     public static CubeController Instance { private set; get; }
 
-    [Header("Impacto")]
+    //EVENTOS
+    public static event Action ImDead;
+    public static event Action ImWin;
 
+
+    [Header("Impacto")]
     public AudioSource impactAudioSource;
+    public AudioClip impactAudioClip;
     public float impactEffectDelay = 0.3f;
     public float impactShakeStrengh = 0.05f;
     public float minImpactVelocity = 3f;
     private bool canPlayImpact = true;
 
     public AutoCamera mycamera;
-    public static event Action ImDead;
-    public static event Action ImWin;
 
     [Header("Movimento")]
     public float moveSpeed = 5f;
@@ -77,6 +81,10 @@ public class CubeController : MonoBehaviour
     
     void OnCollisionEnter(Collision collision)
     {
+        if (collision.collider.CompareTag(ESPETO_TAG))
+        {
+            ImDead?.Invoke();            
+        }
         OnCollisionEffect(collision);
         if( ((1 << collision.collider.gameObject.layer) & groundLayer) != 0)
         {
@@ -92,6 +100,8 @@ public class CubeController : MonoBehaviour
         }
     }
 
+
+
     void OnCollisionEffect(Collision collision)
     {
         float impactStrength = collision.relativeVelocity.magnitude;
@@ -101,7 +111,7 @@ public class CubeController : MonoBehaviour
             float shake = impactStrength * impactShakeStrengh;
             mycamera.Shake(shake, shake);
 
-            impactAudioSource.Play();
+            impactAudioSource.PlayOneShot(impactAudioClip);
             canPlayImpact = false;
 
             Invoke(nameof(ResetImpactSound), impactEffectDelay);
@@ -113,13 +123,10 @@ public class CubeController : MonoBehaviour
         canPlayImpact = true;
     }
 
-    // Este método será chamado automaticamente pelo PlayerInput
     public void OnMove(InputValue value)
     {
         moveInput = value.Get<Vector2>();
     }
-
-    // Este também é chamado automaticamente
     public void OnJump(InputValue value)
     {
         if (value.isPressed)
@@ -127,17 +134,19 @@ public class CubeController : MonoBehaviour
             jumpRequested = true;
         }
     }
+    public void OnPause(InputValue value)
+    {
+        GameManager.Instance.Pause();
+    }
 
     public void Resurrect()
     {
-        transform.position = lastPlatform.transform.position + (Vector3.up * 2);
+        transform.position = (lastPlatform != null? lastPlatform.transform.position: Vector3.zero) + (Vector3.up * 2);
         transform.rotation = Quaternion.identity;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
     }
-    
-   
 
     private void Roll(Vector2 input)
     {

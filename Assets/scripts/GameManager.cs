@@ -1,20 +1,32 @@
-using TMPro;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance{ private set; get; }
+
+    public event Action<bool> PauseEvent;
+    public bool IsPaused { set; get; } = false;
+
     [SerializeField] GameObject panel;
-    [SerializeField] TMP_Text pointsText;
 
-    [SerializeField] AudioSource audioSource;
-    [SerializeField] MissionManager missionManager;
+    [SerializeField] AudioClip winGameSound;
 
-    private int totalPoints;
-
+    private void Awake()
+    {
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
     private void Start()
     {
-        missionManager = FindObjectOfType<MissionManager>();
         CubeController.ImWin += Win;
     }
     private void OnDestroy()
@@ -22,24 +34,20 @@ public class GameManager : MonoBehaviour
         CubeController.ImWin -= Win;
     }
 
+    public void Pause()
+    {
+        IsPaused = !IsPaused;
+        PauseEvent?.Invoke(IsPaused);
+    }
+
     private void Win()
     {
         panel.SetActive(true);
-        foreach (Mission mission in missionManager.activeMissions)
-        {
-            if (mission.Check())
-            {
-                totalPoints += mission.rewardPoints;
-            }
-        }
-
-        audioSource.Play();
-        pointsText.text = $"+{totalPoints} pontos!";
-
+        
+        SFXManager.Instance.PlaySound(winGameSound);
         PlayerPrefs.SetInt("LAST_SCENE", SceneManager.GetActiveScene().buildIndex + 1);
-
+        PointsManager.Instance.Save();
     }
-
     public void NextMap()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1, LoadSceneMode.Single);
